@@ -16,11 +16,11 @@ public class Configs {
 
 	// demo data
 	public static final String POST_DATA = "{"
-			+ " \"secretKey\": \"BUXj/7/gHHI=\" ,"
+			+ " \"secretKey\": \"BSpBGt5MFwY=\" ,"
 			+ " \"transaction\": {"
 			+ " \"command\": \"pay\" ,"
-			+ " \"cardCode\": \"118609_group1_2020\" ,"
-			+ " \"owner\": \"Group 1\" ,"
+			+ " \"cardCode\": \"kscq2_group8_2021\" ,"
+			+ " \"owner\": \"Group 8\" ,"
 			+ " \"cvvCode\": \"185\" ,"
 			+ " \"dateExpried\": \"1125\" ,"
 			+ " \"transactionContent\": \"Pei debt\" ,"
@@ -46,6 +46,7 @@ public class Configs {
 	public static final String SPLASH_SCREEN_PATH = "/views/fxml/splash.fxml";
 	public static final String CART_SCREEN_PATH = "/views/fxml/cart.fxml";
 	public static final String SHIPPING_SCREEN_PATH = "/views/fxml/shipping.fxml";
+	public static final String RUSH_ORDER_SCREEN_PATH = "/views/fxml/rush_order.fxml";
 	public static final String CART_MEDIA_PATH = "/views/fxml/media_cart.fxml";
 	public static final String HOME_PATH  = "/views/fxml/home.fxml";
 	public static final String HOME_MEDIA_PATH = "/views/fxml/media_home.fxml";

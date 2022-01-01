@@ -3,17 +3,22 @@ package views.screen.shipping;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import controller.PlaceOrderController;
+import controller.PlaceRushOrderController;
 import common.exception.InvalidDeliveryInfoException;
 import entity.invoice.Invoice;
 import entity.order.Order;
+import entity.order.OrderMedia;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -44,6 +49,9 @@ public class ShippingScreenHandler extends BaseScreenHandler implements Initiali
 	@FXML
 	private ComboBox<String> province;
 
+	@FXML
+	private CheckBox isRushOrder;
+	
 	private Order order;
 
 	public ShippingScreenHandler(Stage stage, String screenPath, Order order) throws IOException {
@@ -80,19 +88,58 @@ public class ShippingScreenHandler extends BaseScreenHandler implements Initiali
 			throw new InvalidDeliveryInfoException(e.getMessage());
 		}
 	
-		// calculate shipping fees
-		int shippingFees = getBController().calculateShippingFee(order);
-		order.setShippingFees(shippingFees);
-		order.setDeliveryInfo(messages);
+		// xử lý rush order
+		if(isRushOrder.isSelected()) {
+			boolean supportRushOrder = true;
+			String message = "";
+			PlaceRushOrderController placeRushOrderController = new PlaceRushOrderController();
+			String location = province.getValue();
+			List<Integer> mediaIds = new ArrayList<>();
+			this.order.getlstOrderMedia().forEach(c -> {
+				OrderMedia orderMedia = (OrderMedia) c;
+				mediaIds.add(orderMedia.getMedia().getId());
+			});
+			
+			if(!placeRushOrderController.checkAddressSupportRushOrder(location)) {
+				supportRushOrder = false;
+				message = "Your location not support rush order";
+			} else if (!placeRushOrderController.checkExistMediaSupportRushOrder(mediaIds)) {
+				supportRushOrder = false;
+				message = "Not support rush order for any medias";
+			}
+			
+			if(!supportRushOrder) {
+				PopupScreen.error(message);
+			} else {
+				// calculate shipping fees
+				int shippingFees = getBController().calculateShippingFee(order);
+				order.setShippingFees(shippingFees);
+				order.setDeliveryInfo(messages);
+				
+				// create invoice screen
+				BaseScreenHandler RushOrderInfoScreenHandler = new RushOrderScreenHandler(this.stage, Configs.RUSH_ORDER_SCREEN_PATH, order);
+				RushOrderInfoScreenHandler.setPreviousScreen(this);
+				RushOrderInfoScreenHandler.setHomeScreenHandler(homeScreenHandler);
+				RushOrderInfoScreenHandler.setScreenTitle("Shipping Screen");
+				RushOrderInfoScreenHandler.setBController(getBController());
+				RushOrderInfoScreenHandler.show();
+			}
+		} else {
+			// calculate shipping fees
+			int shippingFees = getBController().calculateShippingFee(order);
+			order.setShippingFees(shippingFees);
+			order.setDeliveryInfo(messages);
+			
+			// create invoice screen
+			Invoice invoice = getBController().createInvoice(order);
+			BaseScreenHandler InvoiceScreenHandler = new InvoiceScreenHandler(this.stage, Configs.INVOICE_SCREEN_PATH, invoice);
+			InvoiceScreenHandler.setPreviousScreen(this);
+			InvoiceScreenHandler.setHomeScreenHandler(homeScreenHandler);
+			InvoiceScreenHandler.setScreenTitle("Invoice Screen");
+			InvoiceScreenHandler.setBController(getBController());
+			InvoiceScreenHandler.show();
+		}
 		
-		// create invoice screen
-		Invoice invoice = getBController().createInvoice(order);
-		BaseScreenHandler InvoiceScreenHandler = new InvoiceScreenHandler(this.stage, Configs.INVOICE_SCREEN_PATH, invoice);
-		InvoiceScreenHandler.setPreviousScreen(this);
-		InvoiceScreenHandler.setHomeScreenHandler(homeScreenHandler);
-		InvoiceScreenHandler.setScreenTitle("Invoice Screen");
-		InvoiceScreenHandler.setBController(getBController());
-		InvoiceScreenHandler.show();
 	}
 
 	public PlaceOrderController getBController(){

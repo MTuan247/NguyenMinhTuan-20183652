@@ -78,8 +78,13 @@ public class PlaceOrderController extends BaseController{
    * @throws InterruptedException
    * @throws IOException
    */
-    public void validateDeliveryInfo(HashMap<String, String> info) throws InterruptedException, IOException{
+    public boolean validateDeliveryInfo(HashMap<String, String> info) throws InterruptedException, IOException{
+    	String phoneNumber = info.get("address");
+    	String name = info.get("name");
+    	String address = info.get("phoneNumber");
     	
+    	return validateName(name) && validatePhoneNumber(phoneNumber) && validateAddress(address);
+    
     }
     
     public boolean validatePhoneNumber(String phoneNumber) {

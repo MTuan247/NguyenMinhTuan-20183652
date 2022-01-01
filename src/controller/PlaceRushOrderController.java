@@ -20,7 +20,7 @@ public class PlaceRushOrderController {
 	/**
 	 * Danh sach dia chi ho tro giao hang nhanh
 	 */
-	public static List<String> ADDRESS_SUPPORT_RUSH_ORDER = List.of("Hà Nội");
+	public static List<String> ADDRESS_SUPPORT_RUSH_ORDER = List.of("hà nội");
 	
 	/**
 	 * Danh sach san pham ho tro giao hang nhanh
